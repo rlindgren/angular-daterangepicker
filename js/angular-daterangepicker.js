@@ -20,7 +20,10 @@
         max: '=',
         model: '=ngModel',
         opts: '=options',
-        clearable: '='
+        clearable: '=',
+        opens: '@',
+        drops: '@',
+        ranges: '='
       },
       link: function($scope, element, attrs, modelCtrl) {
         var _clear, _init, _initBoundaryField, _mergeOpts, _picker, _setDatePoint, _setEndDate, _setStartDate, _validate, _validateMax, _validateMin, customOpts, el, opts;
@@ -37,7 +40,11 @@
         };
         el = $(element);
         customOpts = $scope.opts;
-        opts = _mergeOpts({}, dateRangePickerConfig, customOpts);
+        opts = _mergeOpts({}, dateRangePickerConfig, customOpts, {
+          drops: $scope.drops || 'down',
+          opens: $scope.opens || 'right',
+          ranges: $scope.ranges || []
+        });
         _picker = null;
         _clear = function() {
           _picker.setStartDate();

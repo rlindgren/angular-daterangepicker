@@ -16,6 +16,9 @@ picker.directive 'dateRangePicker', ($compile, $timeout, $parse, dateRangePicker
     model: '=ngModel'
     opts: '=options'
     clearable: '='
+    opens: '@'
+    drops: '@'
+    ranges: '='
   link: ($scope, element, attrs, modelCtrl) ->
     # Custom angular extend function to extend locales, so they are merged instead of overwritten
     # angular.merge removes prototypes...
@@ -28,7 +31,11 @@ picker.directive 'dateRangePicker', ($compile, $timeout, $parse, dateRangePicker
 
     el = $(element)
     customOpts = $scope.opts
-    opts = _mergeOpts({}, dateRangePickerConfig, customOpts)
+    opts = _mergeOpts({}, dateRangePickerConfig, customOpts,
+      drops: $scope.drops || 'down'
+      opens: $scope.opens || 'right'
+      ranges: $scope.ranges || []
+    )
     _picker = null
 
     _clear = ->
