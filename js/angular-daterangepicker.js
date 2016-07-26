@@ -43,7 +43,7 @@
         opts = _mergeOpts({}, dateRangePickerConfig, customOpts, {
           drops: $scope.drops || 'down',
           opens: $scope.opens || 'right',
-          ranges: $scope.ranges || []
+          ranges: $scope.ranges || void 0
         });
         _picker = null;
         _clear = function() {
