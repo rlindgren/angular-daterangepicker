@@ -26,7 +26,7 @@
         ranges: '='
       },
       link: function($scope, element, attrs, modelCtrl) {
-        var _clear, _init, _initBoundaryField, _mergeOpts, _picker, _setDatePoint, _setEndDate, _setStartDate, _validate, _validateMax, _validateMin, customOpts, el, opts;
+        var _clear, _init, _initBoundaryField, _mergeOpts, _picker, _setDatePoint, _setEndDate, _setStartDate, _validate, _validateMax, _validateMin, clearableWatch, customOpts, el, endDateWatch, maxBoundaryWatch, minBoundaryWatch, optionsWatch, opts, startDateWatch;
         _mergeOpts = function() {
           var extend, localeExtend;
           localeExtend = angular.extend.apply(angular, Array.prototype.slice.call(arguments).map(function(opt) {
@@ -43,7 +43,7 @@
         opts = _mergeOpts({}, dateRangePickerConfig, customOpts, {
           drops: $scope.drops || 'down',
           opens: $scope.opens || 'right',
-          ranges: $scope.ranges || void 0
+          ranges: $scope.ranges
         });
         _picker = null;
         _clear = function() {
@@ -159,11 +159,13 @@
           return results;
         };
         _init();
-        $scope.$watch('model.startDate', function(n) {
-          return _setStartDate(n);
+        startDateWatch = $scope.$watch('model.startDate', function(n) {
+          _setStartDate(n);
+          return modelCtrl.$render();
         });
-        $scope.$watch('model.endDate', function(n) {
-          return _setEndDate(n);
+        endDateWatch = $scope.$watch('model.endDate', function(n) {
+          _setEndDate(n);
+          return modelCtrl.$render();
         });
         _initBoundaryField = function(field, validator, modelField, optName) {
           if (attrs[field]) {
@@ -176,16 +178,16 @@
             });
           }
         };
-        _initBoundaryField('min', _validateMin, 'startDate', 'minDate');
-        _initBoundaryField('max', _validateMax, 'endDate', 'maxDate');
+        minBoundaryWatch = _initBoundaryField('min', _validateMin, 'startDate', 'minDate');
+        maxBoundaryWatch = _initBoundaryField('max', _validateMax, 'endDate', 'maxDate');
         if (attrs.options) {
-          $scope.$watch('opts', function(newOpts) {
+          optionsWatch = $scope.$watch('opts', function(newOpts) {
             opts = _mergeOpts(opts, newOpts);
             return _init();
           }, true);
         }
         if (attrs.clearable) {
-          $scope.$watch('clearable', function(newClearable) {
+          clearableWatch = $scope.$watch('clearable', function(newClearable) {
             if (newClearable) {
               opts = _mergeOpts(opts, {
                 locale: {
@@ -207,7 +209,23 @@
           });
         }
         return $scope.$on('$destroy', function() {
-          return _picker != null ? _picker.remove() : void 0;
+          if (_picker != null) {
+            _picker.remove();
+          }
+          startDateWatch();
+          endDateWatch();
+          if (angular.isFunction(minBoundaryWatch)) {
+            minBoundaryWatch();
+          }
+          if (angular.isFunction(maxBoundaryWatch)) {
+            maxBoundaryWatch();
+          }
+          if (angular.isFunction(clearableWatch)) {
+            clearableWatch();
+          }
+          if (angular.isFunction(optionsWatch)) {
+            return optionsWatch();
+          }
         });
       }
     };

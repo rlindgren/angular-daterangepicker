@@ -34,7 +34,7 @@ picker.directive 'dateRangePicker', ($compile, $timeout, $parse, dateRangePicker
     opts = _mergeOpts({}, dateRangePickerConfig, customOpts,
       drops: $scope.drops || 'down'
       opens: $scope.opens || 'right'
-      ranges: $scope.ranges || undefined
+      ranges: $scope.ranges
     )
     _picker = null
 
@@ -139,10 +139,12 @@ picker.directive 'dateRangePicker', ($compile, $timeout, $parse, dateRangePicker
 
     # Watchers enable resetting of start and end dates
     # Update the date picker, and set a new viewValue of the model
-    $scope.$watch 'model.startDate', (n) ->
+    startDateWatch = $scope.$watch 'model.startDate', (n) ->
       _setStartDate(n)
-    $scope.$watch 'model.endDate', (n) ->
+      modelCtrl.$render()
+    endDateWatch = $scope.$watch 'model.endDate', (n) ->
       _setEndDate(n)
+      modelCtrl.$render()
 
     # Add validation/watchers for our min/max fields
     _initBoundaryField = (field, validator, modelField, optName) ->
@@ -153,19 +155,19 @@ picker.directive 'dateRangePicker', ($compile, $timeout, $parse, dateRangePicker
           opts[optName] = if date then moment(date) else false
           _init()
 
-    _initBoundaryField('min', _validateMin, 'startDate', 'minDate')
-    _initBoundaryField('max', _validateMax, 'endDate', 'maxDate')
+    minBoundaryWatch = _initBoundaryField('min', _validateMin, 'startDate', 'minDate')
+    maxBoundaryWatch = _initBoundaryField('max', _validateMax, 'endDate', 'maxDate')
 
     # Watch our options
     if attrs.options
-      $scope.$watch 'opts', (newOpts) ->
+      optionsWatch = $scope.$watch 'opts', (newOpts) ->
         opts = _mergeOpts(opts, newOpts)
         _init()
       , true
 
     # Watch clearable flag
     if attrs.clearable
-      $scope.$watch 'clearable', (newClearable) ->
+      clearableWatch = $scope.$watch 'clearable', (newClearable) ->
         if newClearable
           opts = _mergeOpts(opts, {locale: {cancelLabel: opts.clearLabel}})
         _init()
@@ -176,3 +178,10 @@ picker.directive 'dateRangePicker', ($compile, $timeout, $parse, dateRangePicker
 
     $scope.$on '$destroy', ->
       _picker?.remove()
+      startDateWatch()
+      endDateWatch()
+      if angular.isFunction(minBoundaryWatch) then minBoundaryWatch()
+      if angular.isFunction(maxBoundaryWatch) then maxBoundaryWatch()
+      if angular.isFunction(clearableWatch) then clearableWatch()
+      if angular.isFunction(optionsWatch) then optionsWatch()
+
