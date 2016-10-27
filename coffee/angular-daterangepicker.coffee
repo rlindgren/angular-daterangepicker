@@ -5,6 +5,7 @@ picker.constant('dateRangePickerConfig',
   locale:
     separator: ' - '
     format: 'M/D/YY'
+  autoApply: true
 )
 
 picker.directive 'dateRangePicker', ($compile, $timeout, $parse, dateRangePickerConfig) ->
