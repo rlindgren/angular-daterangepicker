@@ -11,7 +11,9 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "bootstrap-daterangepicker": "https://github.com/rlindgren/bootstrap-daterangepicker.git"
+    "angular": "^1.2.17",
+    "bootstrap": "^3.0.0",
+    "bootstrap-daterangepicker": "^2.1.24"
   },
   "main": "index.js",
   "devDependencies": {
